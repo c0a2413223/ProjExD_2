@@ -31,14 +31,13 @@ def gameover(screen:pg.Surface)-> None:
     pg.draw.rect(black,(0,0,0),black.get_rect())
 
     #こうかとんしょうかん
-    kiharu_sad=pg.image.load("fig/IMG_4179.png")
+    kiharu_sad=pg.image.load("fig/8.png")#8.png
     kiharu_rct=kiharu_sad.get_rect(center=(740,330))
-
-    koukaton_sad=pg.image.load("fig/8.png")
-    koukaon_rct=koukaton_sad.get_rect(center=(370,330))
-
+    
+    koukaon_sad=pg.image.load("fig/8.png")
+    koukaon_rct=koukaon_sad.get_rect(center=(370,330))
     screen.blit(kiharu_sad,kiharu_rct)
-    screen.blit(koukaton_sad,koukaon_rct)
+    screen.blit(koukaon_sad,koukaon_rct)
     
     #げーむおーばーもじ
     font=pg.font.Font(None,80)
@@ -48,6 +47,17 @@ def gameover(screen:pg.Surface)-> None:
 
     pg.display.update()
     time.sleep(5)
+
+    #2,時間とともに
+def init_bb_imgs()->tuple[list[pg.Surface],list[int]]:
+    bb_imgs=[]
+    bb_accs=[a for a in range(1,11)]#加速リスト
+    for r in range(1,11):
+        bb_img=pg.Surface((20*r,20*r))
+        pg.draw.circle(bb_img,(255,0,0),(10*r,10*r),10*r)
+        bb_img.set_colorkey((0,0,0))
+        bb_imgs.append(bb_img)
+    return bb_imgs,bb_accs
 
 
 # if kk_rct.colliderect(bb_rct):
@@ -98,7 +108,13 @@ def main():
         if check_bound(kk_rct) !=(True,True):
             kk_rct.move_ip(-sum_mv[0],-sum_mv[1])
         screen.blit(kk_img, kk_rct)
-        bb_rct.move_ip(vx,vy)
+        bb_imgs,bb_accs=init_bb_imgs()
+        avx = vx*bb_accs[min(tmr//500, 9)]
+        bb_img = bb_imgs[min(tmr//500, 9)]
+        avy = vy*bb_accs[min(tmr//500, 9)]
+
+
+        bb_rct.move_ip(avx,avy)
         yoko,tate=check_bound(bb_rct)
         if not yoko:
             vx*=-1
